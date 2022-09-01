@@ -130,6 +130,17 @@ def create_app(test_config=None):
     the form will clear and the question will appear at the end of the last page
     of the questions list in the "List" tab.
     """
+
+    """
+    @TODO:
+    Create a POST endpoint to get questions based on a search term.
+    It should return any questions for whom the search term
+    is a substring of the question.
+
+    TEST: Search by any phrase. The questions list will update to include
+    only question that include that string within their question.
+    Try using the word "title" to start.
+    """
     @app.route('/questions', methods=["POST"])
     def create_question():
         data = request.get_json()
@@ -163,38 +174,6 @@ def create_app(test_config=None):
             abort(422)
 
 
-    """
-    @TODO:
-    Create a POST endpoint to get questions based on a search term.
-    It should return any questions for whom the search term
-    is a substring of the question.
-
-    TEST: Search by any phrase. The questions list will update to include
-    only question that include that string within their question.
-    Try using the word "title" to start.
-    """
-    # @app.route('/questions/search', methods=["POST"])
-    # def search_question():
-    #     searchTerm = request.get_json()['searchTerm']
-    #     if searchTerm is None:
-    #         abort(400)
-    #     else:
-    #         searched_questions = Question.query.filter(Question.question.ilike(f'%{searchTerm}%')).all()
-
-    #         if len(searched_questions) > 0:
-    #             questions = [question.format() for question in searched_questions]
-
-    #             currentCategory_id = questions[-1]['category']
-    #             currentCategory = Category.query.filter(Category.id == currentCategory_id).one_or_none()
-
-    #             return jsonify({
-    #                 'questions': questions,
-    #                 'totalQuestions': len(questions),
-    #                 'currentCategory': currentCategory.type
-    #             })
-    #         else:
-    #             abort(404)
-
 
     """
     @TODO:
@@ -207,9 +186,9 @@ def create_app(test_config=None):
     @app.route('/categories/<int:category_id>/questions')
     def get_category_question(category_id):
         try:
-            # category = Category.query.filter(Category.id == category_id).one_or_none()
-            # questions = Question.query.filter(Question.category == category_id).all()
-            questions = Question.query.join('categories').filter(Question.category == category_id).all()
+            category = Category.query.filter(Category.id == category_id).one_or_none()
+            questions = Question.query.filter(Question.category == category_id).all()
+            # questions = Question.query.join('categories').filter(Question.category == category_id).all()
             formatted_questions = [question.format() for question in questions]
 
             if len(formatted_questions) == 0:
@@ -239,8 +218,8 @@ def create_app(test_config=None):
         try:
             previous_questions = request.get_json()['previous_questions']
             quiz_category = request.get_json()['quiz_category']
-
-            category = Category.query.filter(Category.type == quiz_category).one_or_none()
+            # print(quiz_category)
+            category = Category.query.filter(Category.type == quiz_category['type']).one_or_none()
             questions = Question.query.filter(Question.category == category.id).all()
             # questions = Question.query.join('categories').filter(Question.category == category_id).all()
             new_question = []
@@ -256,6 +235,8 @@ def create_app(test_config=None):
                 return jsonify({
                     "question": new_question[0].format()
                 })
+            else:
+                abort(422)
         except:
             abort(422)
         

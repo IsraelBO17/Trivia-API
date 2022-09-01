@@ -57,7 +57,7 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_get_paginated_questions_error(self):
         """Test get_questions endpoint for 404 error"""
-        res = self.client().get('/questions?page=3')
+        res = self.client().get('/questions?page=5')
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'], False)
@@ -119,17 +119,17 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['error'], 422)
         self.assertEqual(data['message'], 'Unprocessable')
 
-    def test_quizzes(self):
+    def test_play_quiz(self):
         """Test play_quiz endpoint"""
-        res = self.client().post('/quizzes', json={'previous_questions':[5,9],'quiz_category': 'History'})
+        res = self.client().post('/quizzes', json={'previous_questions':[5,9],'quiz_category': {'type': 'History', 'id': 4}})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['question'])
 
-    def test_quizzes_for_error(self):
+    def test_play_quiz_for_error(self):
         """Test play_quiz endpoint for error"""
-        res = self.client().post('/quizzes', json={'previous_questions':[5,9],'quiz_category': 'Entertainment'})
+        res = self.client().post('/quizzes', json={'previous_questions':[2,4,6],'quiz_category': {'type': 'Entertainment', 'id': 5}})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 422)
